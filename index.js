@@ -24,12 +24,19 @@ app.use((req, res, next) => {
 
 // 全域錯誤處理
 app.use((err, req, res, next) => {
-  if (err.name === 'UnauthorizedError') {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+  // 400 Bad Request
   if (err.status === 400) {
     return res.status(400).json({ message: err.message || 'Bad Request' });
   }
+  // 401 Unauthorized
+  if (err.status === 401) {
+    return res.status(401).json({ message: err.message || 'Unauthorized' });
+  }
+  // 404 Not Found（理論上已由上方 404 handler 處理）
+  if (err.status === 404) {
+    return res.status(404).json({ message: err.message || 'Not Found' });
+  }
+  // 其他錯誤
   res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
 });
 
